@@ -11,3 +11,4 @@ class PokemonAdmin(admin.ModelAdmin):
 @admin.register(PokemonEntity)
 class PokemonEntityAdmin(admin.ModelAdmin):
     list_display = ("pokemon", "lat", "lon",)
+    list_filter = ("pokemon", )
