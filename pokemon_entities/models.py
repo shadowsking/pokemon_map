@@ -12,13 +12,13 @@ class Pokemon(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name="next_evolutions",
+        related_name="next_evolutions"
     )
     image = models.ImageField(
         verbose_name="Изображение",
         upload_to="images/",
         blank=True,
-        null=True,
+        null=True
     )
 
     def __str__(self):
@@ -32,11 +32,18 @@ class PokemonEntity(models.Model):
         Pokemon,
         verbose_name="Покемон",
         on_delete=models.CASCADE,
+        related_name="pokemon_entities"
     )
-    appeared_at = models.DateTimeField(verbose_name="Дата и время появления", blank=True, null=True, )
-    disappeared_at = models.DateTimeField(verbose_name="Дата и время исчезновения", blank=True, null=True, )
-    level = models.IntegerField(verbose_name="Уровень", blank=True, null=True, )
-    health = models.IntegerField(verbose_name="Здоровье", blank=True, null=True, )
-    strength = models.IntegerField(verbose_name="Сила", blank=True, null=True, )
-    defence = models.IntegerField(verbose_name="Защита", blank=True, null=True, )
-    stamina = models.IntegerField(verbose_name="Выносливость", blank=True, null=True, )
+    appeared_at = models.DateTimeField(verbose_name="Дата и время появления", blank=True, null=True)
+    disappeared_at = models.DateTimeField(verbose_name="Дата и время исчезновения", blank=True, null=True)
+    level = models.IntegerField(verbose_name="Уровень", blank=True, null=True)
+    health = models.IntegerField(verbose_name="Здоровье", blank=True, null=True)
+    strength = models.IntegerField(verbose_name="Сила", blank=True, null=True)
+    defence = models.IntegerField(verbose_name="Защита", blank=True, null=True)
+    stamina = models.IntegerField(verbose_name="Выносливость", blank=True, null=True)
+
+    def __str__(self):
+        return "{title} - {level} lvl".format(
+            title=self.pokemon.title,
+            level=self.level
+        )
