@@ -3,6 +3,8 @@ import json
 
 from django.http import HttpResponseNotFound
 from django.shortcuts import render
+from django.utils.timezone import localtime
+
 from .models import Pokemon, PokemonEntity
 
 MOSCOW_CENTER = [55.751244, 37.618423]
@@ -39,7 +41,12 @@ def show_all_pokemons(request):
             'title_ru': pokemon.title,
         })
 
-        pokemon_entities = PokemonEntity.objects.filter(pokemon=pokemon)
+        current_datetime = localtime()
+        pokemon_entities = PokemonEntity.objects.filter(
+            pokemon=pokemon,
+            appeared_at__gte=current_datetime,
+            disappeared_at__lte=current_datetime,
+        )
         for pokemon_entity in pokemon_entities:
             add_pokemon(
                 folium_map,
