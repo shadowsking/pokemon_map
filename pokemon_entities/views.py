@@ -25,13 +25,16 @@ def add_pokemon(folium_map, lat, lon, image_url=DEFAULT_IMAGE_URL):
     ).add_to(folium_map)
 
 
-def get_pokemon_entities(pokemon_id):
+def get_pokemon_entities(pokemon_id=None):
     current_datetime = localtime()
-    return PokemonEntity.objects.filter(
-        pokemon=pokemon_id,
+    filters = dict(
         appeared_at__lte=current_datetime,
         disappeared_at__gte=current_datetime,
     )
+    if pokemon_id:
+        filters["pokemon"] = pokemon_id
+
+    return PokemonEntity.objects.filter(**filters)
 
 
 def get_pokemon_image_url(request, pokemon_image):
@@ -44,21 +47,20 @@ def show_all_pokemons(request):
     pokemons_on_page = []
     pokemons = Pokemon.objects.all()
     for pokemon in pokemons:
-        pokemon_image_url = get_pokemon_image_url(request, pokemon.image)
         pokemons_on_page.append({
             'pokemon_id': pokemon.id,
-            'img_url': pokemon_image_url,
+            'img_url': get_pokemon_image_url(request, pokemon.image),
             'title_ru': pokemon.title,
         })
 
-        pokemon_entities = get_pokemon_entities(pokemon)
-        for pokemon_entity in pokemon_entities:
-            add_pokemon(
-                folium_map,
-                pokemon_entity.lat,
-                pokemon_entity.lon,
-                pokemon_image_url
-            )
+    entities = get_pokemon_entities()
+    for entity in entities:
+        add_pokemon(
+            folium_map,
+            entity.lat,
+            entity.lon,
+            get_pokemon_image_url(request, entity.pokemon.image)
+        )
 
     return render(request, 'mainpage.html', context={
         'map': folium_map._repr_html_(),
